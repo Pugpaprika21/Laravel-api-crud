@@ -20,3 +20,5 @@ check which Laravel version : php artisan about
 
 php artisan migrate:refresh ล้างข้อมูล เเละสร้างฐานข้อมูลใหม่
 php artisan make:request [TestRequest] สร้าง validate
+php artisan make:resource [TestResource] สร้าง resource
+
