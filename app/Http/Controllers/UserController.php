@@ -7,30 +7,36 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
-    public function __construct()
+    public function login(Request $request): JsonResponse
     {
-        //$this->middleware('auth:sanctum');
-    }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(): JsonResponse
-    {
-        $users = User::select('id', 'username', 'password', 'created_at')->orderBy('created_at', 'desc')->get();
-        $userCount = $users->count();
-        if ($userCount) {
-            return response()->json(['data' => $users->toArray(), 'row' => $userCount]);
+        $validator = Validator::make($request->all(), [
+            'username' => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
         }
-        return response()->json(['row' => $userCount]);
+
+        $user = User::where('username', $request->username)->first();
+
+        if (Hash::check($request->password, $user->password)) {
+            $token = JWTAuth::fromUser($user, ['exp' => now()->addMinutes(1)->timestamp]);
+            $data = [
+                'token' => $token,
+                'user' => $user
+            ];
+            return response()->json(['message' => 'Login success..', 'data' => $data], 200);
+        }
+
+        return response()->json(['message' => 'Login error..'], 500);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request): JsonResponse
+    public function register(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'username' => ['required', 'string'],
@@ -54,37 +60,5 @@ class UserController extends Controller
         $user->save();
 
         return response()->json(['status' => true, 'message' => 'create user success.']);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

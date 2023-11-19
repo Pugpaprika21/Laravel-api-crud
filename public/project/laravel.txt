@@ -17,3 +17,5 @@ create seeder : php artisan make:seeder AdminUserSeeder
 run seeder one by one : php artisan db:seed --class=AdminUserSeeder
 
 check which Laravel version : php artisan about
+
+php artisan migrate:refresh ล้างข้อมูล เเละสร้างฐานข้อมูลใหม่
