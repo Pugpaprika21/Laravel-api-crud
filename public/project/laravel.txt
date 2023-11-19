@@ -1,0 +1,19 @@
+start : php artisan serv
+
+create controller : php artisan make:controller NameController --resource
+create all : php artisan make:model ModelName -a 
+            - model
+            - controller
+            - seeder
+            - migration
+            - factory
+
+create model & migrations : php artisan make:model [Name] -m
+
+create migrations all project : php artisan migrate
+create migrations one by one : php artisan migrate --path=database/migrations/2023_09_28_122842_create_master_users_table.php
+
+create seeder : php artisan make:seeder AdminUserSeeder
+run seeder one by one : php artisan db:seed --class=AdminUserSeeder
+
+check which Laravel version : php artisan about
