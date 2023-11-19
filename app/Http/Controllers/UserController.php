@@ -17,20 +17,14 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        $users = User::select('id', 'username', 'password', 'created_at')->orderBy('created_at', 'desc')->paginate(10);
-        if ($users->total()) {
-            return response()->json($users);
+        $users = User::select('id', 'username', 'password', 'created_at')->orderBy('created_at', 'desc')->get();
+        $userCount = $users->count();
+        if ($userCount) {
+            return response()->json(['data' => $users->toArray(), 'row' => $userCount]);
         }
-        return response()->json($users);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
+        return response()->json(['row' => $userCount]);
     }
 
     /**
@@ -53,7 +47,7 @@ class UserController extends Controller
         if ($user::where('username', $request->username)->orWhere('email', $request->email)->first()) {
             return response()->json(['message' => 'The username or email is already taken.'], 422);
         }
-        
+
         $user->username = $request->username;
         $user->password = Hash::make($request->password);
         $user->email = $request->email;
